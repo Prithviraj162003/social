@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import connectDB from './src/config/db.js';
 import authRoutes from './src/routes/auth.routes.js';
 import userRoutes from './src/routes/users.routes.js';
@@ -11,7 +12,7 @@ import Activity from './src/models/Activity.js';
 dotenv.config();
 const app = express();
 
-// Enable CORS for frontend (replace with your frontend URL)
+// Enable CORS (optional: set your frontend URL for production)
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   credentials: true,
@@ -23,7 +24,7 @@ app.use(express.json());
 // Connect to MongoDB
 connectDB();
 
-// Routes
+// API routes
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
@@ -45,7 +46,16 @@ app.get('/api/activities', async (req, res) => {
   }
 });
 
-// Default root route
+// Serve frontend build in production
+const __dirname = path.resolve();
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../frontend/dist')));
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../frontend/dist/index.html'));
+  });
+}
+
+// Default root route for API
 app.get('/', (req, res) => res.send('Social Activity Feed API'));
 
 // Start server
