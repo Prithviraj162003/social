@@ -12,7 +12,7 @@ import Activity from './src/models/Activity.js';
 dotenv.config();
 const app = express();
 
-// Enable CORS (optional: set your frontend URL for production)
+// CORS
 app.use(cors({
   origin: process.env.FRONTEND_URL || '*',
   credentials: true,
@@ -55,7 +55,7 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
-// Default root route for API
+// Default root
 app.get('/', (req, res) => res.send('Social Activity Feed API'));
 
 // Start server
